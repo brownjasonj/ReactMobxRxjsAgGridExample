@@ -1,0 +1,31 @@
+{
+  "name": "TypeScriptWebPackReact",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "webpack --config config/webpack.config.js",
+    "start": "node server.js"
+  },
+  "devDependencies": {
+    "json-loader": "^0.5.4",
+    "react-hot-loader": "^3.0.0-beta.2",
+    "ts-loader": "^2.0.0",
+    "typescript": "^2.1.5",
+    "typings": "^2.1.0",
+    "webpack": "^1.14.0",
+    "webpack-dev-server": "^1.16.2",
+    "webpack-notifier": "^1.5.0"
+  },
+  "dependencies": {
+    "mobx": "^3.1.0",
+    "mobx-react": "^4.1.0",
+    "mobx-react-devtools": "^4.2.11",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
+    "react-router": "^3.0.2",
+    "rx-http-request": "^1.2.0",
+    "rx-http-ts": "^1.0.2",
+    "rxjs-es6": "^5.0.0-alpha.12",
+    "youtube-api-search": "0.0.5"
+  }
+}
