@@ -8,7 +8,7 @@ const { AppContainer } = require('react-hot-loader');
 
 // Import our App container (which we will create in the next step)
 import { App } from './components/App';
-import { postsstate } from './state/posts.state';
+import { weatherState } from './state/weather.state';
 
 // Tell Typescript that there is a global variable called module - see below
 declare var module: { hot: any };
@@ -19,7 +19,7 @@ const rootEl = document.getElementById('app');
 // And render our App into it, inside the HMR App ontainer which handles the hot reloading
 render(
   <AppContainer>
-    <Provider store={ postsstate }>
+    <Provider store={ weatherState }>
       <App />
     </Provider>
   </AppContainer>,
