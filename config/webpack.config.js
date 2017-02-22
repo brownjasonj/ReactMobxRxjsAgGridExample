@@ -58,6 +58,10 @@ var config = {
       { 
         test: /\.json$/, 
         loader: 'json-loader'
+      },
+      {
+        test: /\.css$/,
+        loader: "style!css"
       }
     ]
   },
@@ -66,7 +70,11 @@ var config = {
     // Add the Webpack HMR plugin so it will notify the browser when the app code changes
     new webpack.HotModuleReplacementPlugin(),
     new WebpackNotifierPlugin({ alwaysNotify: true }),
-  ]
+  ],
+
+  alias: {
+    "ag-grid-root" : __dirname + "/node_modules/ag-grid"
+  }
 };
 
 module.exports = config;

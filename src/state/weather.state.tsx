@@ -20,7 +20,6 @@ class WeatherState {
         this.cities.push(weather.city.name);
         console.log(`Add city ${weather.city.name}, ${weather.list}`);
     }
-
 }
 
 const weatherState = new WeatherState();

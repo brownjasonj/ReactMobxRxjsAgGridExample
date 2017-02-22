@@ -4,6 +4,9 @@ import { observer } from 'mobx-react';
 import { AgGridReact } from 'ag-grid-react';
 
 import { WeatherState } from '../state/weather.state';
+import { WeatherData } from '../services/weather-forecast.service';
+
+import { HeaderComponent } from './header.component';
 
 interface Props {
     weatherState : WeatherState;
@@ -12,16 +15,29 @@ interface Props {
 @observer 
 class CityWeatherGrid extends React.Component<Props, {}> {
     private columnDefs: any[] = [
-            {
-                headerName: 'City',
-                field: 'name',
-                width: 30,
-                checkboxSelection: false,
-                suppressSorting: false,
-                suppressMenu: false, 
-                pinned: false
-            }
-    ];
+        {
+            headerName: "City", field: "name", enablePivot: true,
+                    width: 130, filter: 'text'
+        },
+        {
+            headerName: "Country", field: "country", enablePivot: true,
+                    width: 130, filter: 'text'
+        },
+        {
+            headerName: "Population", field: "population", enablePivot: true,
+                    width: 130
+        },
+        {
+            headerName: "Longitude", field: "lon", enablePivot: true,
+                    width: 130
+        },
+        {
+            headerName: "Latitude", field: "lat", enablePivot: true,
+                    width: 130
+        }
+   ];
+
+
 
     private _icons: any = {
                 columnRemoveFromGroup: '<i class="fa fa-remove"/>',
@@ -56,24 +72,34 @@ class CityWeatherGrid extends React.Component<Props, {}> {
         // what you want!
         this._gridOptions = {
             //We register the react date component that ag-grid will use to render
+            //dateComponentFramework:MyReactDateComponent,
             // dateComponentFramework:MyReactDateComponent,
             // this is how you listen for events using gridOptions
             onModelUpdated: function () {
                 console.log('event onModelUpdated received');
             },
-            // defaultColDef : {
-            //     headerComponentFramework : MyReactHeaderComponent,
-            //     headerComponentParams : {
-            //         menuIcon: 'fa-bars'
-            //     }
-            // },
+            defaultColDef : {
+                headerComponentFramework : HeaderComponent,
+                headerComponentParams : {
+                    menuIcon: 'fa-bars'
+                }
+            },
             // this is a simple property
             rowBuffer: 10 // no need to set this, the default is fine for almost all scenarios
         };
     }
 
     @computed get cityList() {
-        const cities: any[] = this.props.weatherState.cityList.map((name) => {return {'name': name}});
+        const cities: any[] = this.props.weatherState.cityList.map((name) => {
+                            const weatherData: WeatherData = this.props.weatherState.cityWeather.get(name);
+                            return {
+                                'name': weatherData.city.name, 
+                                'country': weatherData.city.country,
+                                'lon': weatherData.city.coord.lon,
+                                'lat': weatherData.city.coord.lat,
+                                'population': weatherData.city.population
+                            }
+                            });
         console.log(cities);
         return cities;
     }
@@ -119,80 +145,13 @@ class CityWeatherGrid extends React.Component<Props, {}> {
         console.log(this.cityList);
     }
 
-    invokeSkillsFilterMethod() {
-        var skillsFilter = this._api.getFilterInstance('skills');
-        var componentInstance = skillsFilter.getFrameworkComponentInstance();
-        componentInstance.helloFromSkillsFilter();
-    }
-
-    dobFilter () {
-        let dateFilterComponent = this._gridOptions.api.getFilterInstance('dob');
-        dateFilterComponent.setFilterType('equals');
-        dateFilterComponent.setDateFrom('2000-01-01');
-        this._gridOptions.api.onFilterChanged();
-
-    }
-
     render() {
         var gridTemplate: any;
-        var bottomHeaderTemplate: any;
-        var topHeaderTemplate: any;
-
-        topHeaderTemplate = (
-            <div>
-                <div style={{float: 'right'}}>
-                    <input type="text" onChange={this.onQuickFilterText.bind(this)}
-                           placeholder="Type text to filter..."/>
-                    <button id="btDestroyGrid" disabled={!this._showGrid}
-                            onClick={this.onShowGrid.bind(this, false)}>Destroy Grid
-                    </button>
-                    <button id="btCreateGrid" disabled={this._showGrid} onClick={this.onShowGrid.bind(this, true)}>
-                        Create Grid
-                    </button>
-                </div>
-                <div style={{padding: '4px'}}>
-                    <b>Employees Skills and Contact Details</b> <span id="rowCount"/>
-                </div>
-            </div>
-        );
 
         // showing the bottom header and grid is optional, so we put in a switch
         if (this._showGrid) {
-            bottomHeaderTemplate = (
-                <div>
-                    <div style={{padding: 4}} className={'toolbar'}>
-                        <span>
-                            Grid API:
-                            <button onClick={this.selectAll.bind(this)}>Select All</button>
-                            <button onClick={this.deselectAll.bind(this)}>Clear Selection</button>
-                        </span>
-                        <span style={{marginLeft: 20}}>
-                            Column API:
-                            <button onClick={this.setCountryVisible.bind(this, false)}>Hide Country Column</button>
-                            <button onClick={this.setCountryVisible.bind(this, true)}>Show Country Column</button>
-                        </span>
-                    </div>
-                    <div style={{clear: 'both'}}></div>
-                    <div style={{padding: 4}} className={'toolbar'}>
-                        <span>
-                        <label>
-                            <input type="checkbox" onChange={this.onToggleToolPanel.bind(this)}/>
-                            Show Tool Panel
-                        </label>
-                        <button onClick={this.onRefreshData.bind(this)}>Refresh Data</button>
-                            </span>
-                        <span style={{marginLeft: 20}}>
-                            Filter API:
-                            <button onClick={this.invokeSkillsFilterMethod.bind(this, false)}>Invoke Skills Filter Method</button>
-                            <button onClick={this.dobFilter.bind(this)}>DOB equals to 01/01/2000</button>
-                        </span>
-                    </div>
-                    <div style={{clear: 'both'}}></div>
-                </div>
-            );
-
             gridTemplate = (
-                <div style={{height: 400}} className="ag-fresh">
+                <div style={{height: 200}} className="ag-fresh">
                     <AgGridReact
                         // gridOptions is optional - it's possible to provide
                         // all values as React props
@@ -215,28 +174,29 @@ class CityWeatherGrid extends React.Component<Props, {}> {
                         rowData={this.cityList}
 
                         // no binding, just providing hard coded strings for the properties
-                        suppressRowClickSelection="true"
+                        suppressRowClickSelection="false"
                         rowSelection="multiple"
                         enableColResize="true"
                         enableSorting="true"
                         enableFilter="true"
-                        groupHeaders="true"
-                        rowHeight="22"
+                        groupHeaders="false"
+                        rowHeight="20"
                         debug="true"
                     />
                 </div>
             );
         }
 
-        return <div style={{width: '1024px'}}>
+        return (<div style={{width: '650px'}}>
             <div style={{padding: '4px'}}>
-                {topHeaderTemplate}
-                {bottomHeaderTemplate}
                 {gridTemplate}
             </div>
-        </div>;
+        </div>);
     }
 
 }
 
 export { CityWeatherGrid }
+
+                // {topHeaderTemplate}
+                // {bottomHeaderTemplate}

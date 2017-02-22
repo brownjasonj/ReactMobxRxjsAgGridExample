@@ -8,7 +8,7 @@ import { WeatherState } from '../state/weather.state';
 import { SearchBar } from './search-bar.component';
 import { CityList } from './city-list.component';
 import { CityWeatherGrid } from './cityweather-grid.component';
- 
+import { SimpleGrid } from './simple-grid.component';
 
 interface Props {
     store : WeatherState ;
@@ -24,7 +24,7 @@ class App extends React.Component<any, {}> {
         return (
             <div>
                 <SearchBar weatherState={this.props.store}/>
-                <CityWeatherGrid weatherState={this.props.store}/>
+                <CityWeatherGrid weatherState={this.props.store} />
             </div>
         );
     }
